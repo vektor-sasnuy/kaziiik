@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Додати транспорт - {{ garage.name }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --radius-xl: 20px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --shadow-sm: 0 2px 8px rgba(15, 23, 42, .04);
+            --shadow-md: 0 8px 24px rgba(15, 23, 42, .08);
+            --shadow-lg: 0 16px 48px rgba(15, 23, 42, .12);
+            --border: rgba(15, 23, 42, .08);
+            --border-hover: rgba(15, 23, 42, .14);
+            --muted: rgba(15, 23, 42, .58);
+            --bg: #f8f9fc;
+            --card: #ffffff;
+        }
+
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body { 
+            background: var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, #198754 0%, #157347 100%);
+            color: white;
+            padding: 2.5rem 0 3.5rem;
+            margin-bottom: -2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: .4;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+
+        .breadcrumb-item {
+            color: rgba(255, 255, 255, .7);
+            font-size: .9rem;
+        }
+
+        .breadcrumb-item.active {
+            color: white;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            color: rgba(255, 255, 255, .5);
+        }
+
+        .breadcrumb-item a {
+            color: rgba(255, 255, 255, .85);
+            text-decoration: none;
+            transition: color .2s ease;
+        }
+
+        .breadcrumb-item a:hover {
+            color: white;
+        }
+
+        .page-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .add-icon-large {
+            width: 72px;
+            height: 72px;
+            background: rgba(255, 255, 255, .15);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, .2);
+        }
+
+        .add-icon-large i {
+            font-size: 2.5rem;
+        }
+
+        .page-title {
+            font-size: 2.25rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            margin: 0;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            opacity: .85;
+            margin-top: .35rem;
+        }
+
+        /* Form Container */
+        .form-container {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            padding: 2.5rem;
+            animation: slideUp .5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #198754, #157347);
+            transition: width .3s ease;
+            z-index: 1;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--card);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--muted);
+            transition: all .3s ease;
+            margin-bottom: .75rem;
+        }
+
+        .step.active .step-circle {
+            background: linear-gradient(135deg, #198754, #157347);
+            border-color: #198754;
+            color: white;
+            box-shadow: 0 4px 12px rgba(25, 135, 84, .3);
+            transform: scale(1.1);
+        }
+
+        .step.completed .step-circle {
+            background: #198754;
+            border-color: #198754;
+            color: white;
+        }
+
+        .step-label {
+            font-size: .85rem;
+            color: var(--muted);
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: #198754;
+        }
+
+        /* Form Section */
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: rgba(15, 23, 42, .92);
+            margin-bottom: .5rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .form-section-subtitle {
+            color: var(--muted);
+            font-size: .9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Vehicle Type Cards */
+        .vehicle-types {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .vehicle-type-card {
+            padding: 1.25rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all .2s ease;
+            text-align: center;
+            background: var(--card);
+        }
+
+        .vehicle-type-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .vehicle-type-card.selected {
+            border-color: #198754;
+            background: linear-gradient(135deg, rgba(25, 135, 84, .06), rgba(25, 135, 84, .02));
+            box-shadow: 0 4px 12px rgba(25, 135, 84, .2);
+        }
+
+        .vehicle-type-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: .75rem;
+            font-size: 1.75rem;
+            transition: all .2s ease;
+        }
+
+        .vehicle-type-card:hover .vehicle-type-icon {
+            transform: scale(1.1);
+        }
+
+        .vehicle-type-card.selected .vehicle-type-icon {
+            background: #198754;
+            color: white;
+        }
+
+        .icon-car { background: rgba(13, 110, 253, .1); color: #0d6efd; }
+        .icon-atv { background: rgba(220, 53, 69, .1); color: #dc3545; }
+        .icon-moped { background: rgba(25, 135, 84, .1); color: #198754; }
+        .icon-motocycle { background: rgba(255, 193, 7, .12); color: #997404; }
+
+        .vehicle-type-name {
+            font-weight: 700;
+            color: rgba(15, 23, 42, .85);
+            font-size: .95rem;
+            margin-bottom: .25rem;
+        }
+
+        .vehicle-type-card.selected .vehicle-type-name {
+            color: #198754;
+        }
+
+        .vehicle-type-count {
+            font-size: .8rem;
+            color: var(--muted);
+        }
+
+        /* Form Controls */
+        .form-label {
+            font-weight: 600;
+            color: rgba(15, 23, 42, .85);
+            margin-bottom: .5rem;
+            font-size: .95rem;
+        }
+
+        .form-select {
+            border-radius: var(--radius-md);
+            border: 1.5px solid var(--border);
+            padding: .85rem 1rem;
+            font-size: .95rem;
+            transition: all .2s ease;
+            background-color: var(--card);
+        }
+
+        .form-select:focus {
+            border-color: #198754;
+            box-shadow: 0 0 0 .25rem rgba(25, 135, 84, .1);
+            outline: none;
+        }
+
+        .form-select:hover {
+            border-color: var(--border-hover);
+        }
+
+        /* Selected Vehicle Preview */
+        .vehicle-preview {
+            background: linear-gradient(135deg, rgba(25, 135, 84, .06), rgba(25, 135, 84, .02));
+            border: 1px solid rgba(25, 135, 84, .15);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            display: none;
+            animation: fadeIn .3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .vehicle-preview.show {
+            display: block;
+        }
+
+        .preview-title {
+            font-size: .85rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: #198754;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .preview-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .preview-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-md);
+            background: #198754;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .preview-details {
+            flex: 1;
+        }
+
+        .preview-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: rgba(15, 23, 42, .92);
+            margin-bottom: .35rem;
+        }
+
+        .preview-specs {
+            display: flex;
+            gap: 1rem;
+            font-size: .85rem;
+            color: var(--muted);
+        }
+
+        .preview-spec {
+            display: flex;
+            align-items: center;
+            gap: .35rem;
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            gap: .75rem;
+            margin-top: 2.5rem;
+        }
+
+        .btn-custom {
+            padding: .85rem 1.75rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: .95rem;
+            border: none;
+            transition: all .2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            flex: 1;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #198754, #157347);
+            color: white;
+            box-shadow: 0 4px 12px rgba(25, 135, 84, .25);
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(25, 135, 84, .35);
+        }
+
+        .btn-submit:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .btn-cancel {
+            background: var(--card);
+            color: rgba(15, 23, 42, .75);
+            border: 1.5px solid var(--border);
+        }
+
+        .btn-cancel:hover {
+            background: rgba(15, 23, 42, .04);
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Error Messages */
+        .error-message {
+            background: rgba(220, 53, 69, .08);
+            border: 1px solid rgba(220, 53, 69, .2);
+            color: #dc3545;
+            padding: .75rem 1rem;
+            border-radius: var(--radius-md);
+            margin-top: .5rem;
+            font-size: .85rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        /* Hidden Select */
+        #id_vehicle_type {
+            display: none;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: rgba(13, 110, 253, .06);
+            border: 1px solid rgba(13, 110, 253, .15);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            display: flex;
+            gap: .75rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            color: #0d6efd;
+        }
+
+        .info-text {
+            font-size: .9rem;
+            color: rgba(15, 23, 42, .75);
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 767.98px) {
+            .page-title {
+                font-size: 1.75rem;
+            }
+
+            .add-icon-large {
+                width: 56px;
+                height: 56px;
+            }
+
+            .add-icon-large i {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .vehicle-types {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .progress-steps {
+                margin-bottom: 2rem;
+            }
+
+            .step-label {
+                font-size: .75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="page-header-content">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Панель керування</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'garage_list' %}">Гаражі</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'garage_detail' pk=garage.pk %}">{{ garage.name }}</a></li>
+                    <li class="breadcrumb-item active">Додати транспорт</li>
+                </ol>
+            </nav>
+
+            <div class="page-title-wrapper">
+                <div class="add-icon-large">
+                    <i class="bi bi-plus-circle-fill"></i>
+                </div>
+                <div>
+                    <h1 class="page-title">Додати транспорт</h1>
+                    <div class="page-subtitle">
+                        Виберіть транспорт для гаражу "{{ garage.name }}"
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <div class="form-container">
+                <!-- Progress Steps -->
+                <div class="progress-steps">
+                    <div class="progress-line" id="progressLine"></div>
+                    <div class="step active" id="step1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">Оберіть тип</div>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Оберіть транспорт</div>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Підтвердіть</div>
+                    </div>
+                </div>
+
+                <form method="POST" id="vehicleForm">
+                    {% csrf_token %}
+                    
+                    <!-- Step 1: Vehicle Type -->
+                    <div class="form-section" id="typeSection">
+                        <div class="form-section-title">
+                            <i class="bi bi-1-circle-fill text-success"></i>
+                            Крок 1: Оберіть тип транспорту
+                        </div>
+                        <div class="form-section-subtitle">
+                            Виберіть категорію транспорту, який хочете додати
+                        </div>
+
+                        {{ form.vehicle_type }}
+                        
+                        <div class="vehicle-types">
+                            <div class="vehicle-type-card" data-type="car">
+                                <div class="vehicle-type-icon icon-car">
+                                    <i class="bi bi-car-front-fill"></i>
+                                </div>
+                                <div class="vehicle-type-name">Машина</div>
+                                <div class="vehicle-type-count">Легковий транспорт</div>
+                            </div>
+
+                            <div class="vehicle-type-card" data-type="atv">
+                                <div class="vehicle-type-icon icon-atv">
+                                    <i class="bi bi-truck-front-fill"></i>
+                                </div>
+                                <div class="vehicle-type-name">ATV</div>
+                                <div class="vehicle-type-count">Позашляховик</div>
+                            </div>
+
+                            <div class="vehicle-type-card" data-type="moped">
+                                <div class="vehicle-type-icon icon-moped">
+                                    <i class="bi bi-bicycle"></i>
+                                </div>
+                                <div class="vehicle-type-name">Мопед</div>
+                                <div class="vehicle-type-count">Двоколісний</div>
+                            </div>
+
+                            <div class="vehicle-type-card" data-type="motocycle">
+                                <div class="vehicle-type-icon icon-motocycle">
+                                    <i class="bi bi-speedometer2"></i>
+                                </div>
+                                <div class="vehicle-type-name">Мотоцикл</div>
+                                <div class="vehicle-type-count">Потужний байк</div>
+                            </div>
+                        </div>
+
+                        {% if form.vehicle_type.errors %}
+                            <div class="error-message">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                {{ form.vehicle_type.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Step 2: Select Vehicle -->
+                    <div class="form-section" id="selectSection" style="display: none;">
+                        <div class="form-section-title">
+                            <i class="bi bi-2-circle-fill text-success"></i>
+                            Крок 2: Виберіть конкретний транспорт
+                        </div>
+                        <div class="form-section-subtitle">
+                            Оберіть транспорт зі списку доступних варіантів
+                        </div>
+
+                        <div class="info-box">
+                            <i class="bi bi-info-circle-fill info-icon"></i>
+                            <div class="info-text">
+                                <strong>Порада:</strong> Ви можете додати лише той транспорт, який ще не знаходиться у вашому гаражі.
+                            </div>
+                        </div>
+
+                        <div id="carSelect">
+                            <label for="id_car" class="form-label">
+                                <i class="bi bi-car-front-fill me-2"></i>Оберіть машину
+                            </label>
+                            {{ form.car }}
+                            {% if form.car.errors %}
+                                <div class="error-message">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                    {{ form.car.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div id="atvSelect" style="display:none;">
+                            <label for="id_atv" class="form-label">
+                                <i class="bi bi-truck-front-fill me-2"></i>Оберіть ATV
+                            </label>
+                            {{ form.atv }}
+                            {% if form.atv.errors %}
+                                <div class="error-message">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                    {{ form.atv.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div id="mopedSelect" style="display:none;">
+                            <label for="id_moped" class="form-label">
+                                <i class="bi bi-bicycle me-2"></i>Оберіть мопед
+                            </label>
+                            {{ form.moped }}
+                            {% if form.moped.errors %}
+                                <div class="error-message">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                    {{ form.moped.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div id="motocycleSelect" style="display:none;">
+                            <label for="id_motocycle" class="form-label">
+                                <i class="bi bi-speedometer2 me-2"></i>Оберіть мотоцикл
+                            </label>
+                            {{ form.motocycle }}
+                            {% if form.motocycle.errors %}
+                                <div class="error-message">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                    {{ form.motocycle.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Vehicle Preview -->
+                        <div class="vehicle-preview" id="vehiclePreview">
+                            <div class="preview-title">
+                                <i class="bi bi-eye-fill"></i>
+                                Попередній перегляд
+                            </div>
+                            <div class="preview-card">
+                                <div class="preview-icon" id="previewIcon">
+                                    <i class="bi bi-car-front-fill"></i>
+                                </div>
+                                <div class="preview-details">
+                                    <div class="preview-name" id="previewName">—</div>
+                                    <div class="preview-specs">
+                                        <div class="preview-spec">
+                                            <i class="bi bi-box"></i>
+                                            <span id="previewBody">—</span>
+                                        </div>
+                                        <div class="preview-spec">
+                                            <i class="bi bi-gear-fill"></i>
+                                            <span id="previewMotor">—</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <a href="{% url 'garage_detail' pk=garage.pk %}" class="btn-custom btn-cancel">
+                            <i class="bi bi-x-circle"></i>
+                            Скасувати
+                        </a>
+                        <button type="submit" class="btn-custom btn-submit" id="submitBtn" disabled>
+                            <i class="bi bi-check-circle-fill"></i>
+                            Додати до гаражу
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const vehicleTypeSelect = document.getElementById('id_vehicle_type');
+    const vehicleTypeCards = document.querySelectorAll('.vehicle-type-card');
+    const typeSection = document.getElementById('typeSection');
+    const selectSection = document.getElementById('selectSection');
+    const carSelect = document.getElementById('carSelect');
+    const atvSelect = document.getElementById('atvSelect');
+    const mopedSelect = document.getElementById('mopedSelect');
+    const motocycleSelect = document.getElementById('motocycleSelect');
+    const vehiclePreview = document.getElementById('vehiclePreview');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+    const progressLine = document.getElementById('progressLine');
+
+    // Vehicle type icons
+    const typeIcons = {
+        car: 'bi-car-front-fill',
+        atv: 'bi-truck-front-fill',
+        moped: 'bi-bicycle',
+        motocycle: 'bi-speedometer2'
+    };
+
+    // Handle vehicle type card clicks
+    vehicleTypeCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const type = this.dataset.type;
+            
+            // Update select
+            vehicleTypeSelect.value = type;
+            
+            // Update UI
+            vehicleTypeCards.forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            // Show vehicle select section
+            updateFieldVisibility();
+            
+            // Update progress
+            updateProgress(2);
+        });
+    });
+
+    function updateFieldVisibility() {
+        const selectedType = vehicleTypeSelect.value;
+        
+        if (selectedType) {
+            // Show select section
+            selectSection.style.display = 'block';
+            
+            // Hide all vehicle selects
+            carSelect.style.display = 'none';
+            atvSelect.style.display = 'none';
+            mopedSelect.style.display = 'none';
+            motocycleSelect.style.display = 'none';
+            
+            // Show selected type
+            if (selectedType === 'car') carSelect.style.display = 'block';
+            else if (selectedType === 'atv') atvSelect.style.display = 'block';
+            else if (selectedType === 'moped') mopedSelect.style.display = 'block';
+            else if (selectedType === 'motocycle') motocycleSelect.style.display = 'block';
+            
+            // Scroll to select section
+            setTimeout(() => {
+                selectSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    }
+
+    // Handle vehicle selection change
+    [
+        document.getElementById('id_car'),
+        document.getElementById('id_atv'),
+        document.getElementById('id_moped'),
+        document.getElementById('id_motocycle')
+    ].forEach(select => {
+        if (select) {
+            select.addEventListener('change', function() {
+                if (this.value) {
+                    showPreview(this);
+                    submitBtn.disabled = false;
+                    updateProgress(3);
+                } else {
+                    vehiclePreview.classList.remove('show');
+                    submitBtn.disabled = true;
+                    updateProgress(2);
+                }
+            });
+        }
+    });
+
+    function showPreview(select) {
+        const selectedOption = select.options[select.selectedIndex];
+        const text = selectedOption.text;
+        const type = vehicleTypeSelect.value;
+        
+        // Update preview
+        const previewIcon = document.getElementById('previewIcon');
+        previewIcon.innerHTML = `<i class="bi ${typeIcons[type]}"></i>`;
+        
+        document.getElementById('previewName').textContent = text;
+        
+        // Show preview
+        vehiclePreview.classList.add('show');
+        
+        // Scroll to preview
+        setTimeout(() => {
+            vehiclePreview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+    }
+
+    function updateProgress(stepNum) {
+        // Remove all active/completed states
+        [step1, step2, step3].forEach(step => {
+            step.classList.remove('active', 'completed');
+        });
+        
+        // Add states based on current step
+        if (stepNum >= 1) {
+            step1.classList.add('completed');
+        }
+        if (stepNum >= 2) {
+            step2.classList.add('active');
+        }
+        if (stepNum >= 3) {
+            step2.classList.remove('active');
+            step2.classList.add('completed');
+            step3.classList.add('active');
+        }
+        
+        // Update progress line
+        const progress = ((stepNum - 1) / 2) * 100;
+        progressLine.style.width = progress + '%';
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if there's already a selected type (from form errors)
+        if (vehicleTypeSelect.value) {
+            vehicleTypeCards.forEach(card => {
+                if (card.dataset.type === vehicleTypeSelect.value) {
+                    card.classList.add('selected');
+                }
+            });
+            updateFieldVisibility();
+            updateProgress(2);
+        }
+    });
+
+    // Handle form submission
+    document.getElementById('vehicleForm').addEventListener('submit', function(e) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Додавання...';
+    });
+</script>
+
+</body>
+</html>
