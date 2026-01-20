@@ -54,11 +54,13 @@ def open_case(request, pk):
             garages = Garage.objects.all()
             if garages.exists():
                 garage = garages.first()
-                GarageItem.objects.create(
-                    garage=garage,
-                    vehicle_type=reward.vehicle_type,
-                    **{reward.vehicle_type: reward.get_vehicle()}
-                )
+            else:
+                garage = Garage.objects.create()
+            GarageItem.objects.create(
+                garage=garage,
+                vehicle_type=reward.vehicle_type,
+                **{reward.vehicle_type: reward.get_vehicle()}
+            )
             
             messages.success(request, f"Кейс відкрито! Ви отримали: {reward.get_vehicle().name}")
             
@@ -82,6 +84,7 @@ def open_case(request, pk):
 def open_case_animation(request, pk):
     """Сторінка з анімацією відкриття кейса"""
     case = get_object_or_404(Case, pk=pk, is_active=True)
+    rewards = case.rewards.all().select_related('car', 'atv', 'moped', 'motocycle')
     
     if request.method == 'POST':
         reward = OpenedCase.get_random_reward(case)
@@ -93,17 +96,21 @@ def open_case_animation(request, pk):
             garages = Garage.objects.all()
             if garages.exists():
                 garage = garages.first()
-                GarageItem.objects.create(
-                    garage=garage,
-                    vehicle_type=reward.vehicle_type,
-                    **{reward.vehicle_type: reward.get_vehicle()}
-                )
+            else:
+                garage = Garage.objects.create()
+            GarageItem.objects.create(
+                garage=garage,
+                vehicle_type=reward.vehicle_type,
+                **{reward.vehicle_type: reward.get_vehicle()}
+            )
             
             vehicle = reward.get_vehicle()
             return JsonResponse({
                 'success': True,
+                'reward_id': reward.id,
                 'vehicle_name': vehicle.name,
                 'vehicle_type': reward.vehicle_type,
+                'vehicle_type_label': reward.get_vehicle_type_display(),
                 'rarity': case.get_rarity_display(),
                 'case_name': case.name,
             })
@@ -112,6 +119,7 @@ def open_case_animation(request, pk):
     
     return render(request, 'cases/case_open_animation.html', {
         'case': case,
+        'rewards': rewards,
     })
 
 

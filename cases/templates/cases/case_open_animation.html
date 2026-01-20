@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ case.name }} - Відкриття кейса</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --radius-xl: 20px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --shadow-md: 0 8px 24px rgba(15, 23, 42, .08);
+            --border: rgba(15, 23, 42, .08);
+            --bg: #f8f9fc;
+            --card: #ffffff;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 2.5rem 0 3.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: .4;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+
+        .breadcrumb-item a {
+            color: rgba(255, 255, 255, .8);
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: white;
+        }
+
+        .case-info {
+            display: flex;
+            align-items: flex-end;
+            gap: 2rem;
+        }
+
+        .case-icon-large {
+            font-size: 4.5rem;
+            width: 110px;
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, .15);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(10px);
+        }
+
+        .case-title-section h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin: 0 0 .5rem 0;
+        }
+
+        .case-meta {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .case-rarity {
+            display: inline-block;
+            padding: .4rem 1rem;
+            background: rgba(255, 255, 255, .2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: .9rem;
+        }
+
+        .case-price {
+            color: white;
+            font-weight: 700;
+        }
+
+        .btn-back {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-back:hover {
+            text-decoration: underline;
+        }
+
+        .case-open-container {
+            padding-left: clamp(1rem, 2vw, 2.5rem);
+            padding-right: clamp(1rem, 2vw, 2.5rem);
+        }
+
+        .case-stage {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .roller-card {
+            background: var(--card);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            width: min(1800px, 96vw);
+            margin: 0 auto;
+        }
+
+        .roller-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 .25rem 0;
+        }
+
+        .section-subtitle {
+            margin: 0;
+            color: #6b7280;
+        }
+
+        .case-badges {
+            display: flex;
+            gap: .75rem;
+            flex-wrap: wrap;
+        }
+
+        .case-badge {
+            padding: .4rem .85rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: .85rem;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .roller-body {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .roller-window {
+            position: relative;
+            background: #0f172a;
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(255, 255, 255, .08);
+            overflow: hidden;
+            padding: 2.5rem 0;
+            --item-width: 260px;
+            --item-gap: 20px;
+            flex: 1;
+        }
+
+        .roller-window::before,
+        .roller-window::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 160px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .roller-window::before {
+            left: 0;
+            background: linear-gradient(90deg, rgba(15, 23, 42, 1), rgba(15, 23, 42, 0));
+        }
+
+        .roller-window::after {
+            right: 0;
+            background: linear-gradient(270deg, rgba(15, 23, 42, 1), rgba(15, 23, 42, 0));
+        }
+
+        .roller-window.is-rolling {
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, .3), 0 20px 40px rgba(15, 23, 42, .25);
+        }
+
+        .roller-marker {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 4px;
+            background: #ff6b6b;
+            transform: translateX(-50%);
+            z-index: 3;
+            box-shadow: 0 0 18px rgba(255, 107, 107, .7);
+        }
+
+        .roller-marker::before,
+        .roller-marker::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+        }
+
+        .roller-marker::before {
+            top: -6px;
+            border-top-color: #ff6b6b;
+        }
+
+        .roller-marker::after {
+            bottom: -6px;
+            border-bottom-color: #ff6b6b;
+        }
+
+        .roller-viewport {
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .roller-track {
+            display: flex;
+            align-items: center;
+            gap: var(--item-gap);
+            padding: 0 2.5rem;
+            will-change: transform;
+        }
+
+        .roller-item {
+            flex: 0 0 var(--item-width);
+            width: var(--item-width);
+            background: rgba(15, 23, 42, .9);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            padding: 1rem;
+            text-align: center;
+            color: #e2e8f0;
+            transition: transform .3s ease, box-shadow .3s ease;
+        }
+
+        .roller-item.is-winner {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 16px 28px rgba(255, 107, 107, .2);
+        }
+
+        .item-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto .75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, .08);
+            font-size: 2rem;
+        }
+
+        .item-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #f8fafc;
+            min-height: 2.8rem;
+        }
+
+        .item-type {
+            margin-top: .35rem;
+            font-size: .7rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: #94a3b8;
+        }
+
+        .item-car {
+            border-color: rgba(59, 130, 246, .5);
+        }
+
+        .item-car .item-icon {
+            background: rgba(59, 130, 246, .2);
+            color: #93c5fd;
+        }
+
+        .item-atv {
+            border-color: rgba(34, 197, 94, .45);
+        }
+
+        .item-atv .item-icon {
+            background: rgba(34, 197, 94, .2);
+            color: #86efac;
+        }
+
+        .item-moped {
+            border-color: rgba(245, 158, 11, .5);
+        }
+
+        .item-moped .item-icon {
+            background: rgba(245, 158, 11, .2);
+            color: #fcd34d;
+        }
+
+        .item-motocycle {
+            border-color: rgba(225, 29, 72, .5);
+        }
+
+        .item-motocycle .item-icon {
+            background: rgba(225, 29, 72, .2);
+            color: #fda4af;
+        }
+
+        .lever-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .75rem;
+            margin-left: auto;
+            min-width: 240px;
+            text-align: center;
+        }
+
+        .lever-label {
+            font-size: .75rem;
+            letter-spacing: .25em;
+            text-transform: uppercase;
+            color: #6b7280;
+            font-weight: 700;
+        }
+
+        .lever-shell {
+            width: 240px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+        }
+
+        .toggle-container {
+            --knob-size: 2.6em;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            font-size: 22px;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .toggle-container.lever-toggle {
+            transform: rotate(90deg) scale(1.1);
+            transform-origin: center;
+        }
+
+        .toggle-input {
+            position: absolute;
+            z-index: 2;
+            bottom: 132.5%;
+            border-radius: 50%;
+            transform: rotate(-25deg);
+            transform-origin: 50% 4.75em;
+            width: var(--knob-size);
+            height: var(--knob-size);
+            opacity: 0;
+            font: inherit;
+            transition: transform .24s cubic-bezier(.65, 1.35, .5, 1);
+            cursor: pointer;
+        }
+
+        .toggle-input:checked {
+            transform: rotate(25deg);
+        }
+
+        .toggle-handle-wrapper {
+            position: absolute;
+            z-index: 1;
+            bottom: -135%;
+            -webkit-mask-image: linear-gradient(to bottom, #000 62.125%, transparent 50%);
+            mask-image: linear-gradient(to bottom, #000 62.125%, transparent 50%);
+            width: 200%;
+            overflow: hidden;
+        }
+
+        .toggle-handle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: rotate(-25deg);
+            transform-origin: bottom center;
+            transition: transform .24s cubic-bezier(.65, 1.35, .5, 1);
+        }
+
+        .toggle-input:checked + .toggle-handle-wrapper > .toggle-handle {
+            transform: rotate(25deg);
+        }
+
+        .toggle-handle-knob {
+            position: relative;
+            z-index: 1;
+            border-radius: 50%;
+            width: var(--knob-size);
+            height: var(--knob-size);
+            background-image: radial-gradient(farthest-corner at 70% 30%, #fedee2 4%, #d63534 12% 24%, #a81a1a 50% 65%, #d63534 75%);
+            transition: transform .24s cubic-bezier(.65, 1.35, .5, 1);
+        }
+
+        .toggle-input:checked + .toggle-handle-wrapper .toggle-handle-knob {
+            transform: rotate(-90deg);
+        }
+
+        .toggle-handle-knob::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: inherit;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 8px 2px rgb(255 255 255 / .4);
+            opacity: 0;
+            transition: opacity .2s;
+        }
+
+        @media (hover: hover) {
+            .toggle-input:hover + .toggle-handle-wrapper .toggle-handle-knob::after,
+            .toggle-input:focus-visible + .toggle-handle-wrapper .toggle-handle-knob::after {
+                opacity: 1;
+            }
+        }
+
+        .toggle-handle-bar-wrapper {
+            position: relative;
+            width: .5em;
+            height: 3em;
+        }
+
+        .toggle-handle-bar {
+            position: absolute;
+            top: calc(var(--knob-size) / 2 * -1);
+            left: 0;
+            width: 100%;
+            height: calc(100% + var(--knob-size) / 2);
+            background-image: linear-gradient(to right, #777475, #a4a4a4, #fff 45% 55%, #a4a4a4, #777475);
+            background-position-x: .06125em;
+            transition: background-position-x .24s cubic-bezier(.65, 1.35, .5, 1);
+            box-shadow: inset 0 1em .25em rgb(0 0 0 / .4);
+        }
+
+        .toggle-input:checked + .toggle-handle-wrapper .toggle-handle-bar {
+            background-position-x: -.06125em;
+        }
+
+        .toggle-base {
+            position: relative;
+            border-radius: 3.125em;
+            padding: .25em;
+            width: 3.5em;
+            height: 1.125em;
+            background-color: #fff;
+            background-image: linear-gradient(to bottom, #fff, #d7d7d7);
+            box-shadow: 0 -.25em .5em #fff, 0 .25em .5em #d7d7d7;
+        }
+
+        .toggle-base-inside {
+            position: relative;
+            border-radius: inherit;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(to bottom, #a6a6a6, #7d7d7d);
+            box-shadow: inset 0 .0625em rgb(255 255 255 / .2), inset 0 -.03125em rgb(255 255 255 / 1), inset 0 -.0625em .25em rgb(0 0 0 / .1);
+        }
+
+        .toggle-base-inside::after {
+            content: '';
+            position: absolute;
+            border-radius: inherit;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(to bottom, #5ab054, #438c3c);
+            box-shadow: inherit;
+            opacity: 0;
+            transition: opacity .24s cubic-bezier(.65, 1.35, .5, 1);
+        }
+
+        .toggle-input:checked ~ .toggle-base .toggle-base-inside::after {
+            opacity: 1;
+        }
+
+        .toggle-input:disabled {
+            cursor: not-allowed;
+        }
+
+        .toggle-input:disabled + .toggle-handle-wrapper,
+        .toggle-input:disabled ~ .toggle-base {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+
+        .roll-status {
+            font-size: .95rem;
+            color: #6b7280;
+        }
+
+        .roll-error {
+            margin-top: 1rem;
+            padding: .75rem 1rem;
+            border-radius: var(--radius-md);
+            background: #fee2e2;
+            color: #991b1b;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .btn-secondary {
+            padding: .65rem 1.25rem;
+            border-radius: var(--radius-md);
+            background: #111827;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .35rem;
+        }
+
+        .btn-light {
+            padding: .65rem 1.25rem;
+            border-radius: var(--radius-md);
+            background: #f3f4f6;
+            color: #111827;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .35rem;
+        }
+
+        .result-modal {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 3rem 1.5rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s ease;
+            z-index: 1050;
+        }
+
+        .result-modal.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .result-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, .65);
+            z-index: 1;
+        }
+
+        .result-modal-confetti {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity .3s ease;
+            z-index: 2;
+        }
+
+        .result-modal.is-visible .result-modal-confetti {
+            opacity: 1;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            top: -10%;
+            left: var(--x);
+            width: var(--size);
+            height: calc(var(--size) * 1.4);
+            background: var(--color);
+            border-radius: 4px;
+            transform: rotate(var(--rotate));
+            animation: confetti-fall var(--duration) linear infinite;
+            animation-delay: var(--delay);
+            opacity: .9;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-10%) rotate(var(--rotate));
+            }
+            100% {
+                transform: translateY(120vh) rotate(calc(var(--rotate) + 360deg));
+            }
+        }
+
+        .result-modal-panel {
+            position: relative;
+            z-index: 3;
+            background: #ffffff;
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            width: min(520px, 92vw);
+            box-shadow: 0 28px 60px rgba(15, 23, 42, .3);
+            transform: translateY(-40px);
+            opacity: 0;
+            transition: transform .35s ease, opacity .35s ease;
+        }
+
+        .result-modal.is-visible .result-modal-panel {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .result-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            border: none;
+            background: #f3f4f6;
+            color: #111827;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.25rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .result-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .result-modal-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffe4e6;
+            color: #e11d48;
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .result-modal-title {
+            font-size: .75rem;
+            font-weight: 700;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: #6b7280;
+        }
+
+        .result-modal-name {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #111827;
+            margin-top: .35rem;
+        }
+
+        .result-modal-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            margin-top: .85rem;
+        }
+
+        .result-modal-badge {
+            padding: .35rem .85rem;
+            border-radius: 999px;
+            background: #f3f4f6;
+            color: #111827;
+            font-size: .8rem;
+            font-weight: 600;
+        }
+
+        .result-modal-hint {
+            margin-top: .85rem;
+            color: #6b7280;
+            font-size: .95rem;
+        }
+
+        .result-modal-actions {
+            display: flex;
+            gap: .75rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .case-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .case-icon-large {
+                width: 90px;
+                height: 90px;
+                font-size: 3.5rem;
+            }
+
+            .roller-window {
+                --item-width: 210px;
+                --item-gap: 14px;
+                padding: 2rem 0;
+            }
+
+            .roller-window::before,
+            .roller-window::after {
+                width: 80px;
+            }
+
+            .roller-body {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .lever-shell {
+                width: 200px;
+                height: 130px;
+            }
+
+            .toggle-container {
+                font-size: 18px;
+            }
+
+            .result-modal-panel {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-header">
+    <div class="container">
+        <div class="page-header-content">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'cases:case_list' %}">Кейси</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'cases:case_detail' case.id %}">{{ case.name }}</a></li>
+                    <li class="breadcrumb-item active">Відкриття</li>
+                </ol>
+            </nav>
+
+            <div class="case-info">
+                <div class="case-icon-large">🎁</div>
+                <div class="case-title-section">
+                    <h1>{{ case.name }}</h1>
+                    {% if case.description %}
+                    <p>{{ case.description }}</p>
+                    {% endif %}
+                    <div class="case-meta">
+                        <span class="case-rarity">{{ case.get_rarity_display }}</span>
+                        {% if case.price > 0 %}
+                        <span class="case-price">{{ case.price }} грн</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid py-4 case-open-container">
+    <a href="{% url 'cases:case_detail' case.id %}" class="btn-back">
+        <i class="bi bi-arrow-left"></i>
+        Назад до кейса
+    </a>
+
+    {% if rewards %}
+    <div class="case-stage">
+        <div class="roller-card">
+            <div class="roller-header">
+                <div>
+                    <h2 class="section-title">Прокрутка нагород</h2>
+                    <p class="section-subtitle">Стандартна механіка, як у CS:GO: зупинка під маркером.</p>
+                </div>
+                <div class="case-badges">
+                    <span class="case-badge">Нагород: {{ rewards|length }}</span>
+                    <span class="case-badge">Відкрито: {{ case.opened_cases.count }}</span>
+                </div>
+            </div>
+
+            <div class="roller-body">
+                <div class="roller-window" id="roller-window">
+                    <div class="roller-marker"></div>
+                    <div class="roller-viewport" id="roller-viewport">
+                        <div class="roller-track" id="roller-track"></div>
+                    </div>
+                </div>
+
+                <div class="lever-controls">
+                    <div class="lever-label">Потягни ричаг</div>
+                    <div class="lever-shell">
+                        <label class="toggle-container lever-toggle">
+                            <input class="toggle-input" type="checkbox" id="open-case" aria-label="Відкрити кейс" data-open-url="{% url 'cases:open_case_animation' case.id %}">
+                            <div class="toggle-handle-wrapper">
+                                <div class="toggle-handle">
+                                    <div class="toggle-handle-knob"></div>
+                                    <div class="toggle-handle-bar-wrapper">
+                                        <div class="toggle-handle-bar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="toggle-base">
+                                <div class="toggle-base-inside"></div>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="roll-status" id="roll-status">Готово до відкриття</div>
+                </div>
+            </div>
+            <div class="roll-error" id="roll-error" role="alert" hidden></div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        Немає доступних нагород в цьому кейсі
+    </div>
+    {% endif %}
+</div>
+
+<div class="result-modal" id="result-modal" aria-hidden="true">
+    <div class="result-modal-backdrop" id="result-modal-backdrop"></div>
+    <div class="result-modal-confetti" aria-hidden="true">
+        <span class="confetti-piece" style="--x: 8%; --size: 10px; --rotate: 15deg; --duration: 5s; --delay: .2s; --color: #f97316;"></span>
+        <span class="confetti-piece" style="--x: 18%; --size: 8px; --rotate: -20deg; --duration: 4.6s; --delay: .4s; --color: #22c55e;"></span>
+        <span class="confetti-piece" style="--x: 26%; --size: 12px; --rotate: 25deg; --duration: 5.4s; --delay: .1s; --color: #60a5fa;"></span>
+        <span class="confetti-piece" style="--x: 34%; --size: 9px; --rotate: -15deg; --duration: 4.8s; --delay: .6s; --color: #f43f5e;"></span>
+        <span class="confetti-piece" style="--x: 42%; --size: 11px; --rotate: 30deg; --duration: 5.2s; --delay: .3s; --color: #a855f7;"></span>
+        <span class="confetti-piece" style="--x: 50%; --size: 7px; --rotate: -30deg; --duration: 4.4s; --delay: .5s; --color: #38bdf8;"></span>
+        <span class="confetti-piece" style="--x: 58%; --size: 12px; --rotate: 10deg; --duration: 5.1s; --delay: .2s; --color: #f59e0b;"></span>
+        <span class="confetti-piece" style="--x: 66%; --size: 9px; --rotate: -10deg; --duration: 4.7s; --delay: .7s; --color: #34d399;"></span>
+        <span class="confetti-piece" style="--x: 74%; --size: 11px; --rotate: 20deg; --duration: 5.3s; --delay: .4s; --color: #fb7185;"></span>
+        <span class="confetti-piece" style="--x: 82%; --size: 8px; --rotate: -25deg; --duration: 4.5s; --delay: .1s; --color: #2dd4bf;"></span>
+        <span class="confetti-piece" style="--x: 90%; --size: 12px; --rotate: 35deg; --duration: 5.6s; --delay: .6s; --color: #facc15;"></span>
+        <span class="confetti-piece" style="--x: 96%; --size: 9px; --rotate: -35deg; --duration: 4.9s; --delay: .3s; --color: #818cf8;"></span>
+    </div>
+    <div class="result-modal-panel" role="dialog" aria-modal="true" aria-labelledby="result-modal-title">
+        <button class="result-modal-close" type="button" data-modal-close aria-label="Закрити">×</button>
+        <div class="result-modal-header">
+            <div class="result-modal-icon" id="result-modal-icon">🎯</div>
+            <div>
+                <div class="result-modal-title" id="result-modal-title">Результат</div>
+                <div class="result-modal-name" id="result-modal-name">Очікуємо відкриття</div>
+            </div>
+        </div>
+        <div class="result-modal-meta">
+            <span class="result-modal-badge" id="result-modal-type">-</span>
+            <span class="result-modal-badge">Кейс: {{ case.name }}</span>
+        </div>
+        <div class="result-modal-hint" id="result-modal-hint">Потягніть ричаг, щоб запустити прокрутку.</div>
+        <div class="result-modal-actions">
+            <a href="{% url 'garage_list' %}" class="btn-secondary">Гараж</a>
+            <a href="{% url 'cases:case_detail' case.id %}" class="btn-light">Назад</a>
+            <button type="button" class="btn-light" data-modal-close>Закрити</button>
+        </div>
+    </div>
+</div>
+
+<form id="open-case-form" class="d-none" method="post" action="{% url 'cases:open_case_animation' case.id %}">
+    {% csrf_token %}
+</form>
+
+<div id="reward-source" class="d-none">
+    {% for reward in rewards %}
+        {% with vehicle=reward.get_vehicle %}
+        {% if vehicle %}
+        <div class="reward-source-item"
+             data-reward-id="{{ reward.id }}"
+             data-vehicle-name="{{ vehicle.name }}"
+             data-vehicle-type="{{ reward.vehicle_type }}"
+             data-vehicle-label="{{ reward.get_vehicle_type_display }}"></div>
+        {% endif %}
+        {% endwith %}
+    {% endfor %}
+</div>
+
+<script>
+    (() => {
+        const leverInput = document.getElementById('open-case');
+        const track = document.getElementById('roller-track');
+        const viewport = document.getElementById('roller-viewport');
+        const rollerWindow = document.getElementById('roller-window');
+        const status = document.getElementById('roll-status');
+        const errorBox = document.getElementById('roll-error');
+        const modal = document.getElementById('result-modal');
+        const modalBackdrop = document.getElementById('result-modal-backdrop');
+        const modalName = document.getElementById('result-modal-name');
+        const modalType = document.getElementById('result-modal-type');
+        const modalHint = document.getElementById('result-modal-hint');
+        const modalIcon = document.getElementById('result-modal-icon');
+        const modalCloseButtons = document.querySelectorAll('[data-modal-close]');
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+
+        if (!leverInput || !track || !viewport || !rollerWindow) {
+            return;
+        }
+
+        const sourceItems = Array.from(document.querySelectorAll('.reward-source-item'));
+        const rewards = sourceItems.map((item) => ({
+            rewardId: Number(item.dataset.rewardId),
+            name: item.dataset.vehicleName || 'Невідомо',
+            type: item.dataset.vehicleType || 'car',
+            typeLabel: item.dataset.vehicleLabel || item.dataset.vehicleType || 'Transport',
+        }));
+        const rewardById = new Map(rewards.map((reward) => [reward.rewardId, reward]));
+
+        const typeIcons = {
+            car: '🚗',
+            atv: '🛻',
+            moped: '🛵',
+            motocycle: '🏍️',
+        };
+
+        let isRolling = false;
+
+        const closeModal = () => {
+            if (!modal) {
+                return;
+            }
+            modal.classList.remove('is-visible');
+            modal.setAttribute('aria-hidden', 'true');
+        };
+
+        const openModal = () => {
+            if (!modal) {
+                return;
+            }
+            modal.classList.add('is-visible');
+            modal.setAttribute('aria-hidden', 'false');
+        };
+
+        if (modalBackdrop) {
+            modalBackdrop.addEventListener('click', closeModal);
+        }
+
+        modalCloseButtons.forEach((button) => {
+            button.addEventListener('click', closeModal);
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && modal?.classList.contains('is-visible')) {
+                closeModal();
+            }
+        });
+
+        const randomReward = () => rewards[Math.floor(Math.random() * rewards.length)];
+
+        const createItem = (reward) => {
+            const item = document.createElement('div');
+            item.className = `roller-item item-${reward.type}`;
+            item.dataset.rewardId = reward.rewardId;
+
+            const icon = document.createElement('div');
+            icon.className = 'item-icon';
+            icon.textContent = typeIcons[reward.type] || '🚗';
+
+            const name = document.createElement('div');
+            name.className = 'item-name';
+            name.textContent = reward.name;
+
+            const type = document.createElement('div');
+            type.className = 'item-type';
+            type.textContent = reward.typeLabel;
+
+            item.append(icon, name, type);
+            return item;
+        };
+
+        const renderTrack = (items, winnerIndex = -1) => {
+            track.innerHTML = '';
+            const fragment = document.createDocumentFragment();
+            let winnerElement = null;
+
+            items.forEach((item, index) => {
+                const element = createItem(item);
+                if (index === winnerIndex) {
+                    winnerElement = element;
+                }
+                fragment.appendChild(element);
+            });
+
+            track.appendChild(fragment);
+            return winnerElement;
+        };
+
+        const resetTrack = () => {
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(0px)';
+            void track.offsetHeight;
+        };
+
+        const computeOffset = (winnerIndex) => {
+            const style = getComputedStyle(rollerWindow);
+            const itemWidth = parseFloat(style.getPropertyValue('--item-width')) || 200;
+            const itemGap = parseFloat(style.getPropertyValue('--item-gap')) || 16;
+            const itemSize = itemWidth + itemGap;
+            const centerOffset = (viewport.clientWidth / 2) - (itemWidth / 2);
+            return Math.max(0, Math.round(winnerIndex * itemSize - centerOffset));
+        };
+
+        const showError = (message) => {
+            errorBox.textContent = message;
+            errorBox.hidden = false;
+        };
+
+        const clearError = () => {
+            errorBox.hidden = true;
+            errorBox.textContent = '';
+        };
+
+        const setResult = (reward) => {
+            if (modalName) {
+                modalName.textContent = reward.name;
+            }
+            if (modalType) {
+                modalType.textContent = reward.typeLabel;
+            }
+            if (modalHint) {
+                modalHint.textContent = 'Транспорт додано в гараж.';
+            }
+            if (modalIcon) {
+                modalIcon.textContent = typeIcons[reward.type] || '🎁';
+            }
+            openModal();
+        };
+
+        const setRollingState = () => {
+            closeModal();
+            if (modalName) {
+                modalName.textContent = 'Прокрутка...';
+            }
+            if (modalType) {
+                modalType.textContent = 'Очікуємо результат';
+            }
+            if (modalHint) {
+                modalHint.textContent = 'Йде вибір нагороди.';
+            }
+            if (modalIcon) {
+                modalIcon.textContent = '⏳';
+            }
+        };
+
+        const requestReward = async () => {
+            const response = await fetch(leverInput.dataset.openUrl, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Помилка сервера при відкритті кейса.');
+            }
+
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error(data.error || 'Немає доступних нагород.');
+            }
+            return data;
+        };
+
+        const renderIdleTrack = () => {
+            if (!rewards.length) {
+                return;
+            }
+            const idleCount = Math.max(12, rewards.length * 2);
+            const items = Array.from({ length: idleCount }, randomReward);
+            renderTrack(items);
+            resetTrack();
+        };
+
+        renderIdleTrack();
+
+        if (!rewards.length) {
+            leverInput.disabled = true;
+            status.textContent = 'Немає нагород для відкриття.';
+            return;
+        }
+
+        status.textContent = 'Потягніть ричаг для відкриття.';
+
+        leverInput.addEventListener('change', async () => {
+            if (isRolling || !leverInput.checked) {
+                return;
+            }
+            isRolling = true;
+            clearError();
+            setRollingState();
+            status.textContent = 'Прокрутка триває...';
+            leverInput.disabled = true;
+
+            let responseData;
+            try {
+                responseData = await requestReward();
+            } catch (error) {
+                showError(error.message || 'Сталася помилка.');
+                status.textContent = 'Спробуйте ще раз.';
+                leverInput.checked = false;
+                leverInput.disabled = false;
+                isRolling = false;
+                return;
+            }
+
+            const fallbackReward = {
+                rewardId: Number(responseData.reward_id) || 0,
+                name: responseData.vehicle_name || 'Невідомо',
+                type: responseData.vehicle_type || 'car',
+                typeLabel: responseData.vehicle_type_label || responseData.vehicle_type || 'Transport',
+            };
+            const winnerReward = rewardById.get(Number(responseData.reward_id)) || fallbackReward;
+
+            const totalItems = Math.max(36, rewards.length * 6);
+            const winnerIndex = totalItems - 7;
+            const items = [];
+
+            for (let i = 0; i < totalItems; i += 1) {
+                items.push(i === winnerIndex ? winnerReward : randomReward());
+            }
+
+            const winnerElement = renderTrack(items, winnerIndex);
+            resetTrack();
+
+            const offset = computeOffset(winnerIndex);
+            rollerWindow.classList.add('is-rolling');
+
+            requestAnimationFrame(() => {
+                track.style.transition = 'transform 5.5s cubic-bezier(0.12, 0.8, 0.2, 1)';
+                track.style.transform = `translateX(-${offset}px)`;
+            });
+
+            track.addEventListener('transitionend', () => {
+                rollerWindow.classList.remove('is-rolling');
+                if (winnerElement) {
+                    winnerElement.classList.add('is-winner');
+                }
+                setResult(winnerReward);
+                status.textContent = 'Готово! Можна відкривати ще.';
+                leverInput.disabled = false;
+                setTimeout(() => {
+                    leverInput.checked = false;
+                }, 300);
+                isRolling = false;
+            }, { once: true });
+        });
+    })();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

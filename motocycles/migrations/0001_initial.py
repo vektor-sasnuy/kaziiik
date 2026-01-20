@@ -15,8 +15,8 @@ class Migration(migrations.Migration):
             name='Motocycles',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField()),
-                ('body', models.CharField()),
+                ('name', models.CharField(max_length=100)),
+                ('body', models.CharField(max_length=100)),
                 ('motor', models.FloatField()),
                 ('starter', models.BooleanField()),
             ],
